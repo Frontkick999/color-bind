@@ -10,13 +10,18 @@ interface ColorCardProps {
   name: string;
   hex: string;
   size?: "sm" | "md" | "lg";
+  showHue?: boolean;
 }
 
 export default function ColorCard({
   name,
   hex,
-  size = "md"
-}: ColorCardProps) {
+  size = "md",
+  showHue = true
+}: ColorCardProps)
+
+
+{
   const sizeClasses =
     size === "lg"
       ? "w-64 h-64 text-lg"
@@ -34,10 +39,14 @@ export default function ColorCard({
         textShadow: "0 1px 2px rgba(0,0,0,0.4)"
       }}
     >
-     <span>{name}</span>
-<span className="opacity-80 text-[11px]">
-  Hue: {getHueFamily(hex)}
-</span>
+    <span>{name}</span>
+
+{showHue && (
+  <span className="opacity-80 text-[11px]">
+    Hue: {getHueFamily(hex)}
+  </span>
+)}
+
 <span className="opacity-70 text-[10px]">{hex}</span>
 
     </div>
