@@ -1,0 +1,22 @@
+export const objectColorMap: Record<string, string> = {
+  banana: "#ffe135",
+  sky: "#87ceeb",
+  grass: "#7cfc00",
+  forest: "#228b22",
+  ocean: "#1b3b6f",
+  sand: "#c2b280",
+  coffee: "#6f4e37",
+  chocolate: "#7b3f00",
+  brick: "#b22222",
+  rose: "#ff007f",
+  lavender: "#b57edc",
+  gold: "#ffd700",
+  silver: "#c0c0c0",
+  blood: "#8a0303",
+  fire: "#ff4500",
+  lava: "#cf1020",
+  mint: "#98ff98",
+  ice: "#e0f7ff",
+  skin: "#d7a18e",
+  sunset: "#ff6b35"
+};
