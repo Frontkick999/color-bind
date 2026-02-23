@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 export default function AnimatedBackground() {
   useEffect(() => {
-    const inter = document.querySelector<HTMLDivElement>(".interactive");
+    const inter = document.querySelector<HTMLDivElement>(".interactive")!;
     if (!inter) return;
 
     let curX = 0,
@@ -13,6 +13,7 @@ export default function AnimatedBackground() {
       tgY = 0;
 
     function move() {
+      if (!inter) return;  
       curX += (tgX - curX) / 20;
       curY += (tgY - curY) / 20;
       inter.style.transform = `translate(${curX}px, ${curY}px)`;
