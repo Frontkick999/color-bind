@@ -40,12 +40,14 @@ const brandPalette = generateBrandPalette(
 
       {/* Brand Palette */}
       <div className="flex flex-col items-center gap-8">
-        <h2 className="text-2xl font-semibold">Brand Palette</h2>
+        <h2 className="text-lg font-semibold text-[#3B4156]">
+  Brand Palette
+</h2>
 
         <div className="flex flex-wrap gap-10 justify-center">
 
           <div className="flex flex-col items-center gap-2">
-            <span className="text-sm font-medium opacity-70">Main</span>
+            <span className="text-sm font-medium opacity-70 text-[#667085]">Main</span>
             <ColorCard
               name={brandPalette.main.name}
               hex={brandPalette.main.hex}
@@ -54,7 +56,7 @@ const brandPalette = generateBrandPalette(
           </div>
 
           <div className="flex flex-col items-center gap-2">
-            <span className="text-sm font-medium opacity-70">Secondary</span>
+            <span className="text-sm font-medium opacity-70 text-[#667085]">Secondary</span>
             <ColorCard
               name={brandPalette.secondary.name}
               hex={brandPalette.secondary.hex}
@@ -63,7 +65,7 @@ const brandPalette = generateBrandPalette(
           </div>
 
           <div className="flex flex-col items-center gap-2">
-            <span className="text-sm font-medium opacity-70">Accent</span>
+            <span className="text-sm font-medium opacity-70 text-[#667085]">Accent</span>
             <ColorCard
               name={brandPalette.accent.name}
               hex={brandPalette.accent.hex}
@@ -72,7 +74,7 @@ const brandPalette = generateBrandPalette(
           </div>
 
           <div className="flex flex-col items-center gap-2">
-            <span className="text-sm font-medium opacity-70">Neutral</span>
+            <span className="text-sm font-medium opacity-70 text-[#667085]">Neutral</span>
             <ColorCard
               name={brandPalette.neutral.name}
               hex={brandPalette.neutral.hex}
@@ -85,7 +87,7 @@ const brandPalette = generateBrandPalette(
 
       {/* Grayscale Preview */}
       <div className="flex flex-col items-center gap-8">
-        <h2 className="text-2xl font-semibold">Grayscale Preview</h2>
+        <h2 className="text-lg font-semibold text-[#3B4156]">Grayscale Preview</h2>
 
         <div className="flex flex-wrap gap-10 justify-center">
 
