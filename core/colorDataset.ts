@@ -6,6 +6,7 @@ export const bigColorDataset: ColorData[] = colornames.map((color) => ({
   name: color.name,
   hex: color.hex.toLowerCase()
 }));
+
 function hexToRgb(hex: string) {
   const cleanHex = hex.replace("#", "");
   const bigint = parseInt(cleanHex, 16);
@@ -45,7 +46,6 @@ export function findClosestColor(hex: string): ColorData {
 
   return closest;
 }
-
 
 export function findColorByKeyword(keyword: string) {
   const lowerKeyword = keyword.toLowerCase();

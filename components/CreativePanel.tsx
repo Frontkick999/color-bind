@@ -8,32 +8,42 @@ import { generateBrandPalette } from "../core/paletteEngine";
 import { generateComplementary } from "../core/colorUtils";
 import { generateAccent } from "../core/colorUtils";
 
+// IMPORTIAMO LA CALAMITA
+import { findClosestMtn94Color } from "../core/mtn94Dataset";
 
 interface CreativePanelProps {
   color: ColorData | null;
+  mode: "technical" | "creative" | "mtn94"; // <-- Ora il pannello sa in che modalità siamo!
 }
 
 export default function CreativePanel({
-  color
-}: CreativePanelProps)
-
-{
-  if (!color) return null;
-  // Secondary matematico (per ora)
-const complementary = generateComplementary(color.hex);
-
-// Accent creativo
-const accent = generateAccent(color.hex);
-
-// Brand palette generata qui dentro
-const brandPalette = generateBrandPalette(
   color,
-  complementary,
-  accent
-);
+  mode
+}: CreativePanelProps) {
+  if (!color) return null;
 
+  // Secondary matematico (per ora)
+  const complementary = generateComplementary(color.hex);
 
+  // Accent creativo
+  const accent = generateAccent(color.hex);
 
+  // Brand palette generata digitalmente
+  let brandPalette = generateBrandPalette(
+    color,
+    complementary,
+    accent
+  );
+
+  // LA MAGIA: Se siamo in MTN 94, forziamo TUTTA la palette a diventare bombolette vere!
+  if (mode === "mtn94") {
+    brandPalette = {
+      main: findClosestMtn94Color(brandPalette.main.hex),
+      secondary: findClosestMtn94Color(brandPalette.secondary.hex),
+      accent: findClosestMtn94Color(brandPalette.accent.hex),
+      neutral: findClosestMtn94Color(brandPalette.neutral.hex),
+    };
+  }
 
   return (
     <div className="mt-16 flex flex-col items-center gap-16">
@@ -41,8 +51,8 @@ const brandPalette = generateBrandPalette(
       {/* Brand Palette */}
       <div className="flex flex-col items-center gap-8">
         <h2 className="text-lg font-semibold text-[#3B4156]">
-  Brand Palette
-</h2>
+          Brand Palette
+        </h2>
 
         <div className="flex flex-wrap gap-10 justify-center">
 
