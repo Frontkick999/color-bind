@@ -18,17 +18,18 @@ import AnimatedBackground from "../components/AnimatedBackground";
 // Importiamo le funzioni MTN 94
 import { findMtn94Suggestions, findMtn94ByKeyword, findClosestMtn94Color } from "../core/mtn94Dataset";
 
+// Importiamo le funzioni MTN HARDCORE (Nuovo!)
+import { findMtnHardcoreSuggestions, findMtnHardcoreByKeyword, findClosestMtnHardcoreColor } from "../core/mtnHardcoreDataset";
+
 // --- NUOVA FUNZIONE: Calcola la luminosità di un HEX ---
 function getBrightness(hex: string) {
   let cleanHex = hex.replace("#", "");
-  // Se l'hex è corto (es. #fff), lo allunga
   if (cleanHex.length === 3) {
     cleanHex = cleanHex.split('').map(c => c + c).join('');
   }
   const r = parseInt(cleanHex.substring(0, 2), 16);
   const g = parseInt(cleanHex.substring(2, 4), 16);
   const b = parseInt(cleanHex.substring(4, 6), 16);
-  // Formula standard per la luminosità percepita
   return (r * 299 + g * 587 + b * 114) / 1000;
 }
 
@@ -36,7 +37,9 @@ export default function Home() {
   const [input, setInput] = useState("");
   const isTyping = input.trim().length > 0;
   const [color, setColor] = useState<ColorData | null>(null);
-  const [mode, setMode] = useState<"technical" | "creative" | "mtn94">("technical");
+  
+  // Aggiunto mtnHardcore allo stato
+  const [mode, setMode] = useState<"technical" | "creative" | "mtn94" | "mtnHardcore">("technical");
   const [suggestions, setSuggestions] = useState<ColorData[]>([]);
 
   const handleChange = (value: string) => {
@@ -51,22 +54,26 @@ export default function Home() {
 
     if (mode === "mtn94") {
       let suggestionResults = findMtn94Suggestions(lowerValue);
-      // MAGIA: Ordiniamo i suggerimenti dal più scuro al più chiaro
       suggestionResults.sort((a, b) => getBrightness(a.hex) - getBrightness(b.hex));
-      
       setSuggestions(suggestionResults);
 
       const keywordMatch = findMtn94ByKeyword(lowerValue);
-      if (keywordMatch) {
-        setColor(keywordMatch);
-      } else {
-        setColor(null);
-      }
+      if (keywordMatch) { setColor(keywordMatch); } else { setColor(null); }
+      return;
+    }
+
+    // NUOVO: Logica di ricerca per Hardcore
+    if (mode === "mtnHardcore") {
+      let suggestionResults = findMtnHardcoreSuggestions(lowerValue);
+      suggestionResults.sort((a, b) => getBrightness(a.hex) - getBrightness(b.hex));
+      setSuggestions(suggestionResults);
+
+      const keywordMatch = findMtnHardcoreByKeyword(lowerValue);
+      if (keywordMatch) { setColor(keywordMatch); } else { setColor(null); }
       return;
     }
 
     let suggestionResults = findColorSuggestions(lowerValue);
-    // Ordiniamo dal più scuro al più chiaro anche per la ricerca normale!
     suggestionResults.sort((a, b) => getBrightness(a.hex) - getBrightness(b.hex));
     setSuggestions(suggestionResults);
 
@@ -106,16 +113,26 @@ export default function Home() {
       shades = shades.map(s => findClosestMtn94Color(s.hex));
       shades = shades.filter((s, index, self) => index === self.findIndex((t) => t.hex === s.hex));
     }
-    if (complementary) {
-      complementary = findClosestMtn94Color(complementary.hex);
-    }
+    if (complementary) { complementary = findClosestMtn94Color(complementary.hex); }
     if (complementaryShades) {
       complementaryShades = complementaryShades.map(s => findClosestMtn94Color(s.hex));
       complementaryShades = complementaryShades.filter((s, index, self) => index === self.findIndex((t) => t.hex === s.hex));
     }
-    if (accent) {
-      accent = findClosestMtn94Color(accent.hex);
+    if (accent) { accent = findClosestMtn94Color(accent.hex); }
+  }
+
+  // NUOVO: Logica di trasformazione per Hardcore
+  if (mode === "mtnHardcore") {
+    if (shades) {
+      shades = shades.map(s => findClosestMtnHardcoreColor(s.hex));
+      shades = shades.filter((s, index, self) => index === self.findIndex((t) => t.hex === s.hex));
     }
+    if (complementary) { complementary = findClosestMtnHardcoreColor(complementary.hex); }
+    if (complementaryShades) {
+      complementaryShades = complementaryShades.map(s => findClosestMtnHardcoreColor(s.hex));
+      complementaryShades = complementaryShades.filter((s, index, self) => index === self.findIndex((t) => t.hex === s.hex));
+    }
+    if (accent) { accent = findClosestMtnHardcoreColor(accent.hex); }
   }
 
   const moodProfile = color && mode === "creative" ? generateMoodFromHex(color.hex) : null;
@@ -159,11 +176,26 @@ export default function Home() {
             <button onClick={() => { setMode("mtn94"); setColor(null); setInput(""); setSuggestions([]); }} className={`h-8 rounded-full px-4 flex items-center justify-center transition-all duration-300 ${mode === "mtn94" ? isTyping ? "bg-white text-[#3B4156]" : "bg-[rgba(31,53,84,0.55)] text-[#F2F4F8] backdrop-blur-xl shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2)]" : isTyping ? "text-[#98A0B3]" : "text-[#B8C3D9]"}`}>
               <span className="text-[12px] font-semibold tracking-tight">MTN 94</span>
             </button>
+
+            {/* NUOVO: Bottone Hardcore */}
+            <button onClick={() => { setMode("mtnHardcore"); setColor(null); setInput(""); setSuggestions([]); }} className={`h-8 rounded-full px-4 flex items-center justify-center transition-all duration-300 ${mode === "mtnHardcore" ? isTyping ? "bg-white text-[#3B4156]" : "bg-[rgba(31,53,84,0.55)] text-[#F2F4F8] backdrop-blur-xl shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2)]" : isTyping ? "text-[#98A0B3]" : "text-[#B8C3D9]"}`}>
+              <span className="text-[12px] font-semibold tracking-tight">Hardcore</span>
+            </button>
           </div>
         </div>
 
         <div className={`backdrop-blur-2xl rounded-[100px] shadow-[0_12px_18.1px_-2px_rgba(0,0,0,0.27)] px-8 py-5 w-full max-w-xl mb-4 transition-all duration-500 ease-in-out ${isTyping ? "border border-[#E6E8F0] bg-gradient-to-b from-white via-[#F6F7FB] to-[#EEF0F7]" : "border border-white/20 bg-white/10 hover:bg-white/15 focus-within:bg-white/15"}`}>
-          <input type="text" placeholder={mode === "mtn94" ? "Search MTN 94 color (e.g. R3001, Red...)" : "Enter HEX or color name (red, sky, dragon...)"} value={input} onChange={(e) => handleChange(e.target.value)} className={`bg-transparent outline-none w-full text-lg text-center transition-colors duration-500 ${isTyping ? "text-[#5B6176] placeholder-[#A0A5B8]" : "text-white placeholder-white/60"}`} />
+          <input 
+            type="text" 
+            placeholder={
+              mode === "mtn94" ? "Search MTN 94 color (e.g. R3001, Red...)" : 
+              mode === "mtnHardcore" ? "Search Hardcore color (e.g. RV 252, Yellow...)" : 
+              "Enter HEX or color name (red, sky, dragon...)"
+            } 
+            value={input} 
+            onChange={(e) => handleChange(e.target.value)} 
+            className={`bg-transparent outline-none w-full text-lg text-center transition-colors duration-500 ${isTyping ? "text-[#5B6176] placeholder-[#A0A5B8]" : "text-white placeholder-white/60"}`} 
+          />
         </div>
 
         {suggestions.length > 0 && (
@@ -238,7 +270,8 @@ export default function Home() {
           </div>
         )}
 
-        {(mode === "creative" || mode === "mtn94") && (
+        {/* NUOVO: Mostra il CreativePanel anche in modalità Hardcore */}
+        {(mode === "creative" || mode === "mtn94" || mode === "mtnHardcore") && (
           <CreativePanel color={color} mode={mode} />
         )}
       </div>

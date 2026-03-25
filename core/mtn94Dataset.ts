@@ -233,8 +233,3 @@ export function findClosestMtn94Color(hex: string): ColorData {
   return findClosestInArray(hex, mtn94Colors);
 }
 
-// Se vuoi tenere il supporto per Hardcore, puoi puntare allo stesso database 
-// o creare un file separato in futuro.
-export const findHardcoreSuggestions = findMtn94Suggestions;
-export const findHardcoreByKeyword = findMtn94ByKeyword;
-export const findClosestHardcoreColor = findClosestMtn94Color;

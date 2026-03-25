@@ -8,12 +8,13 @@ import { generateBrandPalette } from "../core/paletteEngine";
 import { generateComplementary } from "../core/colorUtils";
 import { generateAccent } from "../core/colorUtils";
 
-// IMPORTIAMO LA CALAMITA
+// IMPORTIAMO LE CALAMITE
 import { findClosestMtn94Color } from "../core/mtn94Dataset";
+import { findClosestMtnHardcoreColor } from "../core/mtnHardcoreDataset";
 
 interface CreativePanelProps {
   color: ColorData | null;
-  mode: "technical" | "creative" | "mtn94"; // <-- Ora il pannello sa in che modalità siamo!
+  mode: "technical" | "creative" | "mtn94" | "mtnHardcore"; // <-- Aggiunto mtnHardcore
 }
 
 export default function CreativePanel({
@@ -35,13 +36,23 @@ export default function CreativePanel({
     accent
   );
 
-  // LA MAGIA: Se siamo in MTN 94, forziamo TUTTA la palette a diventare bombolette vere!
+  // LA MAGIA MTN 94
   if (mode === "mtn94") {
     brandPalette = {
       main: findClosestMtn94Color(brandPalette.main.hex),
       secondary: findClosestMtn94Color(brandPalette.secondary.hex),
       accent: findClosestMtn94Color(brandPalette.accent.hex),
       neutral: findClosestMtn94Color(brandPalette.neutral.hex),
+    };
+  }
+
+  // LA MAGIA HARDCORE (Nuova!)
+  if (mode === "mtnHardcore") {
+    brandPalette = {
+      main: findClosestMtnHardcoreColor(brandPalette.main.hex),
+      secondary: findClosestMtnHardcoreColor(brandPalette.secondary.hex),
+      accent: findClosestMtnHardcoreColor(brandPalette.accent.hex),
+      neutral: findClosestMtnHardcoreColor(brandPalette.neutral.hex),
     };
   }
 
