@@ -18,8 +18,11 @@ import AnimatedBackground from "../components/AnimatedBackground";
 // Importiamo le funzioni MTN 94
 import { findMtn94Suggestions, findMtn94ByKeyword, findClosestMtn94Color } from "../core/mtn94Dataset";
 
-// Importiamo le funzioni MTN HARDCORE (Nuovo!)
+// Importiamo le funzioni MTN HARDCORE
 import { findMtnHardcoreSuggestions, findMtnHardcoreByKeyword, findClosestMtnHardcoreColor } from "../core/mtnHardcoreDataset";
+
+// Importiamo le funzioni MTN VICE (Nuovo!)
+import { findMtnViceSuggestions, findMtnViceByKeyword, findClosestMtnViceColor } from "../core/mtnViceDataset";
 
 // --- NUOVA FUNZIONE: Calcola la luminosità di un HEX ---
 function getBrightness(hex: string) {
@@ -38,8 +41,8 @@ export default function Home() {
   const isTyping = input.trim().length > 0;
   const [color, setColor] = useState<ColorData | null>(null);
   
-  // Aggiunto mtnHardcore allo stato
-  const [mode, setMode] = useState<"technical" | "creative" | "mtn94" | "mtnHardcore">("technical");
+  // Aggiunto mtnVice allo stato
+  const [mode, setMode] = useState<"technical" | "creative" | "mtn94" | "mtnHardcore" | "mtnVice">("technical");
   const [suggestions, setSuggestions] = useState<ColorData[]>([]);
 
   const handleChange = (value: string) => {
@@ -62,13 +65,23 @@ export default function Home() {
       return;
     }
 
-    // NUOVO: Logica di ricerca per Hardcore
     if (mode === "mtnHardcore") {
       let suggestionResults = findMtnHardcoreSuggestions(lowerValue);
       suggestionResults.sort((a, b) => getBrightness(a.hex) - getBrightness(b.hex));
       setSuggestions(suggestionResults);
 
       const keywordMatch = findMtnHardcoreByKeyword(lowerValue);
+      if (keywordMatch) { setColor(keywordMatch); } else { setColor(null); }
+      return;
+    }
+
+    // NUOVO: Logica di ricerca per Vice
+    if (mode === "mtnVice") {
+      let suggestionResults = findMtnViceSuggestions(lowerValue);
+      suggestionResults.sort((a, b) => getBrightness(a.hex) - getBrightness(b.hex));
+      setSuggestions(suggestionResults);
+
+      const keywordMatch = findMtnViceByKeyword(lowerValue);
       if (keywordMatch) { setColor(keywordMatch); } else { setColor(null); }
       return;
     }
@@ -121,7 +134,6 @@ export default function Home() {
     if (accent) { accent = findClosestMtn94Color(accent.hex); }
   }
 
-  // NUOVO: Logica di trasformazione per Hardcore
   if (mode === "mtnHardcore") {
     if (shades) {
       shades = shades.map(s => findClosestMtnHardcoreColor(s.hex));
@@ -133,6 +145,20 @@ export default function Home() {
       complementaryShades = complementaryShades.filter((s, index, self) => index === self.findIndex((t) => t.hex === s.hex));
     }
     if (accent) { accent = findClosestMtnHardcoreColor(accent.hex); }
+  }
+
+  // NUOVO: Logica di trasformazione per Vice
+  if (mode === "mtnVice") {
+    if (shades) {
+      shades = shades.map(s => findClosestMtnViceColor(s.hex));
+      shades = shades.filter((s, index, self) => index === self.findIndex((t) => t.hex === s.hex));
+    }
+    if (complementary) { complementary = findClosestMtnViceColor(complementary.hex); }
+    if (complementaryShades) {
+      complementaryShades = complementaryShades.map(s => findClosestMtnViceColor(s.hex));
+      complementaryShades = complementaryShades.filter((s, index, self) => index === self.findIndex((t) => t.hex === s.hex));
+    }
+    if (accent) { accent = findClosestMtnViceColor(accent.hex); }
   }
 
   const moodProfile = color && mode === "creative" ? generateMoodFromHex(color.hex) : null;
@@ -177,9 +203,13 @@ export default function Home() {
               <span className="text-[12px] font-semibold tracking-tight">MTN 94</span>
             </button>
 
-            {/* NUOVO: Bottone Hardcore */}
             <button onClick={() => { setMode("mtnHardcore"); setColor(null); setInput(""); setSuggestions([]); }} className={`h-8 rounded-full px-4 flex items-center justify-center transition-all duration-300 ${mode === "mtnHardcore" ? isTyping ? "bg-white text-[#3B4156]" : "bg-[rgba(31,53,84,0.55)] text-[#F2F4F8] backdrop-blur-xl shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2)]" : isTyping ? "text-[#98A0B3]" : "text-[#B8C3D9]"}`}>
               <span className="text-[12px] font-semibold tracking-tight">Hardcore</span>
+            </button>
+
+            {/* NUOVO: Bottone Vice */}
+            <button onClick={() => { setMode("mtnVice"); setColor(null); setInput(""); setSuggestions([]); }} className={`h-8 rounded-full px-4 flex items-center justify-center transition-all duration-300 ${mode === "mtnVice" ? isTyping ? "bg-white text-[#3B4156]" : "bg-[rgba(31,53,84,0.55)] text-[#F2F4F8] backdrop-blur-xl shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2)]" : isTyping ? "text-[#98A0B3]" : "text-[#B8C3D9]"}`}>
+              <span className="text-[12px] font-semibold tracking-tight">Vice</span>
             </button>
           </div>
         </div>
@@ -190,6 +220,7 @@ export default function Home() {
             placeholder={
               mode === "mtn94" ? "Search MTN 94 color (e.g. R3001, Red...)" : 
               mode === "mtnHardcore" ? "Search Hardcore color (e.g. RV 252, Yellow...)" : 
+              mode === "mtnVice" ? "Search Vice color (e.g. Pink, Blue...)" : 
               "Enter HEX or color name (red, sky, dragon...)"
             } 
             value={input} 
@@ -270,8 +301,8 @@ export default function Home() {
           </div>
         )}
 
-        {/* NUOVO: Mostra il CreativePanel anche in modalità Hardcore */}
-        {(mode === "creative" || mode === "mtn94" || mode === "mtnHardcore") && (
+        {/* Mostra il CreativePanel anche in modalità Vice */}
+        {(mode === "creative" || mode === "mtn94" || mode === "mtnHardcore" || mode === "mtnVice") && (
           <CreativePanel color={color} mode={mode} />
         )}
       </div>

@@ -11,10 +11,11 @@ import { generateAccent } from "../core/colorUtils";
 // IMPORTIAMO LE CALAMITE
 import { findClosestMtn94Color } from "../core/mtn94Dataset";
 import { findClosestMtnHardcoreColor } from "../core/mtnHardcoreDataset";
+import { findClosestMtnViceColor } from "../core/mtnViceDataset";
 
 interface CreativePanelProps {
   color: ColorData | null;
-  mode: "technical" | "creative" | "mtn94" | "mtnHardcore"; // <-- Aggiunto mtnHardcore
+  mode: "technical" | "creative" | "mtn94" | "mtnHardcore" | "mtnVice"; // <-- Aggiunto mtnVice
 }
 
 export default function CreativePanel({
@@ -46,13 +47,23 @@ export default function CreativePanel({
     };
   }
 
-  // LA MAGIA HARDCORE (Nuova!)
+  // LA MAGIA HARDCORE
   if (mode === "mtnHardcore") {
     brandPalette = {
       main: findClosestMtnHardcoreColor(brandPalette.main.hex),
       secondary: findClosestMtnHardcoreColor(brandPalette.secondary.hex),
       accent: findClosestMtnHardcoreColor(brandPalette.accent.hex),
       neutral: findClosestMtnHardcoreColor(brandPalette.neutral.hex),
+    };
+  }
+
+  // LA MAGIA VICE (Nuova!)
+  if (mode === "mtnVice") {
+    brandPalette = {
+      main: findClosestMtnViceColor(brandPalette.main.hex),
+      secondary: findClosestMtnViceColor(brandPalette.secondary.hex),
+      accent: findClosestMtnViceColor(brandPalette.accent.hex),
+      neutral: findClosestMtnViceColor(brandPalette.neutral.hex),
     };
   }
 
